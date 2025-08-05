@@ -12,17 +12,21 @@
     const username = prompt("Enter your username:");
     document.getElementById("userLabel").innerText = username;
 
-    const socket = new WebSocket("ws://3.82.190.61:8080/chat?userId=" + username);
+    fetch('/config')
+        .then(response => response.json())
+        .then(data => {
+            const socket = new WebSocket("ws://" + data.websocketUrl + "/chat?userId=" + username);
 
-    socket.onmessage = function(event) {
-        document.getElementById("chatBox").innerText += event.data + "\n";
-    };
+            socket.onmessage = function(event) {
+                document.getElementById("chatBox").innerText += event.data + "\n";
+            };
 
-    function sendMessage() {
-        const to = document.getElementById("to").value;
-        const msg = document.getElementById("msg").value;
-        socket.send(JSON.stringify({to: to, message: msg}));
-    }
+            window.sendMessage = function() {
+                const to = document.getElementById("to").value;
+                const msg = document.getElementById("msg").value;
+                socket.send(JSON.stringify({to: to, message: msg}));
+            };
+        });
 </script>
 </body>
 </html>
