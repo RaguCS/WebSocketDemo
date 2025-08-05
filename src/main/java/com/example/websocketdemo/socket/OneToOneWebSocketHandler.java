@@ -24,15 +24,15 @@ public class OneToOneWebSocketHandler extends TextWebSocketHandler {
     // import org.slf4j.LoggerFactory;
 
     // Logger instance for secure logging
-    // private static final Logger logger = LoggerFactory.getLogger(YourClassName.class);
+//     private static final Logger logger = LoggerFactory.getLogger(YourClassName.class);
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         String userId = getUserId(session);
         if (userId != null) {
             userSessions.put(userId, session);
-            System.out.println("Connected to " + userId);
-//            logger.info("User connected: {}", userId);
+//            System.out.println("Connected to " + userId);
+            logger.info("User connected: {}", userId);
         }
     }
 
@@ -68,8 +68,8 @@ public class OneToOneWebSocketHandler extends TextWebSocketHandler {
         String userId = getUserId(session);
         if (userId != null) {
             userSessions.remove(userId);
-            System.out.println("User closed: " + userId);
-//            logger.info("{} disconnected", userId);
+//            System.out.println("User closed: " + userId);
+            logger.info("{} disconnected", userId);
         }
     }
 
