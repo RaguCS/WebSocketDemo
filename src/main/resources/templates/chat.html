@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>1-to-1 Chat</title></head>
+<body>
+<h3>Chat as: <span id="userLabel"></span></h3>
+<input type="text" id="to" placeholder="To (username)" />
+<input type="text" id="msg" placeholder="Message" />
+<button onclick="sendMessage()">Send</button>
+<pre id="chatBox"></pre>
+
+<script>
+    const username = prompt("Enter your username:");
+    document.getElementById("userLabel").innerText = username;
+
+    const socket = new WebSocket("ws://3.82.190.61:8080/chat?userId=" + username);
+
+    socket.onmessage = function(event) {
+        document.getElementById("chatBox").innerText += event.data + "\n";
+    };
+
+    function sendMessage() {
+        const to = document.getElementById("to").value;
+        const msg = document.getElementById("msg").value;
+        socket.send(JSON.stringify({to: to, message: msg}));
+    }
+</script>
+</body>
+</html>
