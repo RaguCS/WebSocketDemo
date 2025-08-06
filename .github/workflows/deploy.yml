@@ -1,0 +1,30 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - master  # deploy when pushing to master branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          cd ${{ secrets.APP_DIR }}
+          git reset --hard
+          git pull origin main
+          mvn clean package -DskipTests
+          pkill -f "WebSocketDemo-0.0.1-SNAPSHOT.jar" || true
+          nohup java -jar target/WebSocketDemo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+          EOF
