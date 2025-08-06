@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy:
+    if: ${{ secrets.DEPLOY_ENABLED == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -20,6 +21,6 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF' > ssh-deploy.log 2>&1
           ./scripts/websocketscript.sh
           EOF
