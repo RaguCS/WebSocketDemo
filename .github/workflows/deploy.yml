@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_ENABLED: ${{ secrets.DEPLOY_ENABLED }}   # Map secret to env
 
     steps:
       - name: Checkout code
@@ -18,9 +20,21 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
+      - name: Check deployment toggle
+        run: |
+          if [ "$DEPLOY_ENABLED" != "true" ]; then
+            echo "🚫 Deployment skipped (DEPLOY_ENABLED=$DEPLOY_ENABLED)"
+            exit 0
+          fi
+
       - name: Deploy to EC2
-        if: ${{ secrets.DEPLOY_ENABLED == 'true' }}
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF' > ssh-deploy.log 2>&1
           ./scripts/websocketscript.sh
           EOF
+
+      - name: Upload SSH logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: ssh-deploy-log
+          path: ssh-deploy.log
