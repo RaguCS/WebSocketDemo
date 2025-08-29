@@ -24,6 +24,7 @@
             window.sendMessage = function() {
                 const to = document.getElementById("to").value;
                 const msg = document.getElementById("msg").value;
+                document.getElementById("chatBox").innerText +="You: "+msg+"\n";
                 socket.send(JSON.stringify({to: to, message: msg}));
             };
         });
